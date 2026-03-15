@@ -2,7 +2,7 @@
 
 [![Terraform Registry](https://img.shields.io/badge/terraform-registry-blueviolet.svg)](https://registry.terraform.io/providers/sugarshin/liff/latest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sugarshin/terraform-provider-liff)](https://goreportcard.com/report/github.com/sugarshin/terraform-provider-liff)
-[![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A Terraform provider for managing [LINE LIFF (LINE Front-end Framework)](https://developers.line.biz/en/docs/liff/overview/) applications.
 
@@ -231,4 +231,4 @@ make generate
 
 ## License
 
-[Mozilla Public License v2.0](./LICENSE)
+[MIT License](./LICENSE)
