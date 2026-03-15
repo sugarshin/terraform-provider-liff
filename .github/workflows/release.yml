@@ -2,13 +2,8 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
-    paths-ignore:
-      - 'README.md'
-      - 'docs/**'
-      - 'plan/**'
-  workflow_dispatch:
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
@@ -40,24 +35,6 @@ jobs:
         with:
           go-version-file: 'go.mod'
           cache: true
-      - name: Determine next version
-        id: version
-        run: |
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          VERSION=${LATEST_TAG#v}
-          MAJOR=$(echo "$VERSION" | cut -d. -f1)
-          MINOR=$(echo "$VERSION" | cut -d. -f2)
-          PATCH=$(echo "$VERSION" | cut -d. -f3)
-          NEXT_PATCH=$((PATCH + 1))
-          NEXT_VERSION="v${MAJOR}.${MINOR}.${NEXT_PATCH}"
-          echo "next_version=${NEXT_VERSION}" >> "$GITHUB_OUTPUT"
-          echo "Next version: ${NEXT_VERSION}"
-      - name: Create tag
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "${{ steps.version.outputs.next_version }}" -m "Release ${{ steps.version.outputs.next_version }}"
-          git push origin "${{ steps.version.outputs.next_version }}"
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@2dc316deee8e90f13e1a351ab510b4d5bc0c82cd # v7.0.0
         id: import_gpg
