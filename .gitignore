@@ -27,6 +27,9 @@ website/node_modules
 
 website/vendor
 
+# Plan files
+plan/
+
 # Test exclusions
 !command/test-fixtures/**/*.tfstate
 !command/test-fixtures/**/.terraform/
