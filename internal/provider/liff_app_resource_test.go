@@ -1,3 +1,6 @@
+// Copyright (c) sugarshin
+// SPDX-License-Identifier: MIT
+
 package provider
 
 import (
