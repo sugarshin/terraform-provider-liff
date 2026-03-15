@@ -1,4 +1,4 @@
-// Copyright (c) sugarshin
+// Copyright sugarshin 2026
 // SPDX-License-Identifier: MIT
 
 package client
