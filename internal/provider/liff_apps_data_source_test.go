@@ -32,7 +32,10 @@ func TestLiffAppsDataSource_Schema(t *testing.T) {
 		t.Fatal("missing apps attribute")
 	}
 
-	appsAttr := apps.(dschema.ListNestedAttribute)
+	appsAttr, ok := apps.(dschema.ListNestedAttribute)
+	if !ok {
+		t.Fatal("apps should be ListNestedAttribute")
+	}
 	if !appsAttr.Computed {
 		t.Error("apps should be computed")
 	}
@@ -47,9 +50,6 @@ func TestLiffAppsDataSource_Schema(t *testing.T) {
 
 func TestLiffAppsDataSource_Interfaces(t *testing.T) {
 	d := NewLiffAppsDataSource()
-	if _, ok := d.(datasource.DataSource); !ok {
-		t.Error("should implement datasource.DataSource")
-	}
 	if _, ok := d.(datasource.DataSourceWithConfigure); !ok {
 		t.Error("should implement datasource.DataSourceWithConfigure")
 	}

@@ -90,7 +90,7 @@ func (d *LiffAppsDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 	appModels := make([]LiffAppDataModel, len(apps))
 	for i, app := range apps {
-		appModels[i] = mapLiffAppToDataSourceModel(ctx, &app, &resp.Diagnostics)
+		appModels[i] = mapLiffAppToDataSourceModel(&app, &resp.Diagnostics)
 	}
 	if resp.Diagnostics.HasError() {
 		return

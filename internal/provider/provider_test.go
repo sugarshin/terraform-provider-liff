@@ -11,10 +11,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 )
 
+//nolint:unused // used by acceptance tests
 var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
 	"liff": providerserver.NewProtocol6WithError(New("test")()),
 }
 
+//nolint:unused // used by acceptance tests
 func testAccPreCheck(t *testing.T) {
 	t.Helper()
 

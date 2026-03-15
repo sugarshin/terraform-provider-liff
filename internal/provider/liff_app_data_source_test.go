@@ -28,55 +28,66 @@ func TestLiffAppDataSource_Schema(t *testing.T) {
 
 	s := resp.Schema
 
-	// liff_id should be required
 	liffID, ok := s.Attributes["liff_id"]
 	if !ok {
 		t.Fatal("missing liff_id attribute")
 	}
-	liffIDAttr := liffID.(dschema.StringAttribute)
+	liffIDAttr, ok := liffID.(dschema.StringAttribute)
+	if !ok {
+		t.Fatal("liff_id should be StringAttribute")
+	}
 	if !liffIDAttr.Required {
 		t.Error("liff_id should be required")
 	}
 
-	// All other attributes should be computed
 	for _, name := range []string{"description", "permanent_link_pattern", "bot_prompt"} {
 		attr, ok := s.Attributes[name]
 		if !ok {
 			t.Errorf("missing attribute %q", name)
 			continue
 		}
-		sa := attr.(dschema.StringAttribute)
+		sa, ok := attr.(dschema.StringAttribute)
+		if !ok {
+			t.Errorf("attribute %q should be StringAttribute", name)
+			continue
+		}
 		if !sa.Computed {
 			t.Errorf("attribute %q should be computed", name)
 		}
 	}
 
-	// scope
 	scope, ok := s.Attributes["scope"]
 	if !ok {
 		t.Fatal("missing scope attribute")
 	}
-	scopeAttr := scope.(dschema.ListAttribute)
+	scopeAttr, ok := scope.(dschema.ListAttribute)
+	if !ok {
+		t.Fatal("scope should be ListAttribute")
+	}
 	if !scopeAttr.Computed {
 		t.Error("scope should be computed")
 	}
 
-	// view
 	view, ok := s.Attributes["view"]
 	if !ok {
 		t.Fatal("missing view attribute")
 	}
-	viewAttr := view.(dschema.SingleNestedAttribute)
+	viewAttr, ok := view.(dschema.SingleNestedAttribute)
+	if !ok {
+		t.Fatal("view should be SingleNestedAttribute")
+	}
 	if !viewAttr.Computed {
 		t.Error("view should be computed")
 	}
 
-	// features
 	features, ok := s.Attributes["features"]
 	if !ok {
 		t.Fatal("missing features attribute")
 	}
-	featuresAttr := features.(dschema.SingleNestedAttribute)
+	featuresAttr, ok := features.(dschema.SingleNestedAttribute)
+	if !ok {
+		t.Fatal("features should be SingleNestedAttribute")
+	}
 	if !featuresAttr.Computed {
 		t.Error("features should be computed")
 	}
@@ -84,9 +95,6 @@ func TestLiffAppDataSource_Schema(t *testing.T) {
 
 func TestLiffAppDataSource_Interfaces(t *testing.T) {
 	d := NewLiffAppDataSource()
-	if _, ok := d.(datasource.DataSource); !ok {
-		t.Error("should implement datasource.DataSource")
-	}
 	if _, ok := d.(datasource.DataSourceWithConfigure); !ok {
 		t.Error("should implement datasource.DataSourceWithConfigure")
 	}

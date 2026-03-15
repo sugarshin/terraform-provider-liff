@@ -31,32 +31,38 @@ func TestLiffAppResource_Schema(t *testing.T) {
 		t.Fatal("schema attributes should not be nil")
 	}
 
-	// Check liff_id
 	liffID, ok := s.Attributes["liff_id"]
 	if !ok {
 		t.Fatal("missing liff_id attribute")
 	}
-	liffIDAttr := liffID.(rschema.StringAttribute)
+	liffIDAttr, ok := liffID.(rschema.StringAttribute)
+	if !ok {
+		t.Fatal("liff_id should be StringAttribute")
+	}
 	if !liffIDAttr.Computed {
 		t.Error("liff_id should be computed")
 	}
 
-	// Check description
 	desc, ok := s.Attributes["description"]
 	if !ok {
 		t.Fatal("missing description attribute")
 	}
-	descAttr := desc.(rschema.StringAttribute)
+	descAttr, ok := desc.(rschema.StringAttribute)
+	if !ok {
+		t.Fatal("description should be StringAttribute")
+	}
 	if !descAttr.Optional {
 		t.Error("description should be optional")
 	}
 
-	// Check view (required)
 	view, ok := s.Attributes["view"]
 	if !ok {
 		t.Fatal("missing view attribute")
 	}
-	viewAttr := view.(rschema.SingleNestedAttribute)
+	viewAttr, ok := view.(rschema.SingleNestedAttribute)
+	if !ok {
+		t.Fatal("view should be SingleNestedAttribute")
+	}
 	if !viewAttr.Required {
 		t.Error("view should be required")
 	}
@@ -70,12 +76,14 @@ func TestLiffAppResource_Schema(t *testing.T) {
 		t.Error("view should have 'module_mode' attribute")
 	}
 
-	// Check features (optional + computed)
 	features, ok := s.Attributes["features"]
 	if !ok {
 		t.Fatal("missing features attribute")
 	}
-	featuresAttr := features.(rschema.SingleNestedAttribute)
+	featuresAttr, ok := features.(rschema.SingleNestedAttribute)
+	if !ok {
+		t.Fatal("features should be SingleNestedAttribute")
+	}
 	if !featuresAttr.Optional {
 		t.Error("features should be optional")
 	}
@@ -83,8 +91,10 @@ func TestLiffAppResource_Schema(t *testing.T) {
 		t.Error("features should be computed")
 	}
 
-	// Check ble is computed only
-	ble := featuresAttr.Attributes["ble"].(rschema.BoolAttribute)
+	ble, ok := featuresAttr.Attributes["ble"].(rschema.BoolAttribute)
+	if !ok {
+		t.Fatal("features.ble should be BoolAttribute")
+	}
 	if !ble.Computed {
 		t.Error("features.ble should be computed")
 	}
@@ -92,12 +102,14 @@ func TestLiffAppResource_Schema(t *testing.T) {
 		t.Error("features.ble should NOT be optional (read-only)")
 	}
 
-	// Check bot_prompt default
 	botPrompt, ok := s.Attributes["bot_prompt"]
 	if !ok {
 		t.Fatal("missing bot_prompt attribute")
 	}
-	botPromptAttr := botPrompt.(rschema.StringAttribute)
+	botPromptAttr, ok := botPrompt.(rschema.StringAttribute)
+	if !ok {
+		t.Fatal("bot_prompt should be StringAttribute")
+	}
 	if !botPromptAttr.Optional {
 		t.Error("bot_prompt should be optional")
 	}
@@ -105,12 +117,14 @@ func TestLiffAppResource_Schema(t *testing.T) {
 		t.Error("bot_prompt should be computed")
 	}
 
-	// Check scope
 	scope, ok := s.Attributes["scope"]
 	if !ok {
 		t.Fatal("missing scope attribute")
 	}
-	scopeAttr := scope.(rschema.ListAttribute)
+	scopeAttr, ok := scope.(rschema.ListAttribute)
+	if !ok {
+		t.Fatal("scope should be ListAttribute")
+	}
 	if !scopeAttr.Optional {
 		t.Error("scope should be optional")
 	}
@@ -118,12 +132,14 @@ func TestLiffAppResource_Schema(t *testing.T) {
 		t.Error("scope should be computed")
 	}
 
-	// Check permanent_link_pattern
 	plp, ok := s.Attributes["permanent_link_pattern"]
 	if !ok {
 		t.Fatal("missing permanent_link_pattern attribute")
 	}
-	plpAttr := plp.(rschema.StringAttribute)
+	plpAttr, ok := plp.(rschema.StringAttribute)
+	if !ok {
+		t.Fatal("permanent_link_pattern should be StringAttribute")
+	}
 	if !plpAttr.Optional {
 		t.Error("permanent_link_pattern should be optional")
 	}
@@ -131,9 +147,6 @@ func TestLiffAppResource_Schema(t *testing.T) {
 
 func TestLiffAppResource_Interfaces(t *testing.T) {
 	r := NewLiffAppResource()
-	if _, ok := r.(resource.Resource); !ok {
-		t.Error("should implement resource.Resource")
-	}
 	if _, ok := r.(resource.ResourceWithImportState); !ok {
 		t.Error("should implement resource.ResourceWithImportState")
 	}
