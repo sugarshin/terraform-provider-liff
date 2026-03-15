@@ -177,7 +177,6 @@ func TestBuildUpdateLiffAppRequest(t *testing.T) {
 }
 
 func TestMapLiffAppToModel(t *testing.T) {
-	ctx := context.Background()
 	app := &liff.LiffApp{
 		LiffId:      "1234567890-AbCdEfGh",
 		Description: "Test App",
@@ -197,7 +196,7 @@ func TestMapLiffAppToModel(t *testing.T) {
 
 	var data LiffAppResourceModel
 	var diags diag.Diagnostics
-	mapLiffAppToModel(ctx, app, &data, &diags)
+	mapLiffAppToModel(app, &data, &diags)
 
 	if diags.HasError() {
 		t.Fatalf("mapLiffAppToModel: %v", diags.Errors())
@@ -216,34 +215,51 @@ func TestMapLiffAppToModel(t *testing.T) {
 		t.Errorf("expected bot_prompt 'normal', got %q", data.BotPrompt.ValueString())
 	}
 
-	// Check view
 	if data.View.IsNull() {
 		t.Fatal("view should not be null")
 	}
 	viewAttrs := data.View.Attributes()
-	if viewAttrs["type"].(types.String).ValueString() != "full" {
-		t.Errorf("expected view type 'full', got %q", viewAttrs["type"])
+	viewType, ok := viewAttrs["type"].(types.String)
+	if !ok {
+		t.Fatal("view type should be types.String")
 	}
-	if viewAttrs["url"].(types.String).ValueString() != "https://example.com" {
-		t.Errorf("expected view url 'https://example.com', got %q", viewAttrs["url"])
+	if viewType.ValueString() != "full" {
+		t.Errorf("expected view type 'full', got %q", viewType.ValueString())
 	}
-	if !viewAttrs["module_mode"].(types.Bool).ValueBool() {
+	viewURL, ok := viewAttrs["url"].(types.String)
+	if !ok {
+		t.Fatal("view url should be types.String")
+	}
+	if viewURL.ValueString() != "https://example.com" {
+		t.Errorf("expected view url 'https://example.com', got %q", viewURL.ValueString())
+	}
+	moduleMode, ok := viewAttrs["module_mode"].(types.Bool)
+	if !ok {
+		t.Fatal("view module_mode should be types.Bool")
+	}
+	if !moduleMode.ValueBool() {
 		t.Error("expected module_mode true")
 	}
 
-	// Check features
 	if data.Features.IsNull() {
 		t.Fatal("features should not be null")
 	}
 	featAttrs := data.Features.Attributes()
-	if featAttrs["ble"].(types.Bool).ValueBool() {
+	ble, ok := featAttrs["ble"].(types.Bool)
+	if !ok {
+		t.Fatal("features ble should be types.Bool")
+	}
+	if ble.ValueBool() {
 		t.Error("expected ble false")
 	}
-	if !featAttrs["qr_code"].(types.Bool).ValueBool() {
+	qrCode, ok := featAttrs["qr_code"].(types.Bool)
+	if !ok {
+		t.Fatal("features qr_code should be types.Bool")
+	}
+	if !qrCode.ValueBool() {
 		t.Error("expected qr_code true")
 	}
 
-	// Check scope
 	if data.Scope.IsNull() {
 		t.Fatal("scope should not be null")
 	}
@@ -251,13 +267,16 @@ func TestMapLiffAppToModel(t *testing.T) {
 	if len(scopeElems) != 2 {
 		t.Fatalf("expected 2 scopes, got %d", len(scopeElems))
 	}
-	if scopeElems[0].(types.String).ValueString() != "openid" {
-		t.Errorf("expected first scope 'openid', got %q", scopeElems[0])
+	firstScope, ok := scopeElems[0].(types.String)
+	if !ok {
+		t.Fatal("scope element should be types.String")
+	}
+	if firstScope.ValueString() != "openid" {
+		t.Errorf("expected first scope 'openid', got %q", firstScope.ValueString())
 	}
 }
 
 func TestMapLiffAppToModel_EmptyFields(t *testing.T) {
-	ctx := context.Background()
 	app := &liff.LiffApp{
 		LiffId: "1234567890-Empty",
 		View: &liff.LiffView{
@@ -269,7 +288,7 @@ func TestMapLiffAppToModel_EmptyFields(t *testing.T) {
 
 	var data LiffAppResourceModel
 	var diags diag.Diagnostics
-	mapLiffAppToModel(ctx, app, &data, &diags)
+	mapLiffAppToModel(app, &data, &diags)
 
 	if diags.HasError() {
 		t.Fatalf("mapLiffAppToModel: %v", diags.Errors())
@@ -291,7 +310,6 @@ func TestMapLiffAppToModel_EmptyFields(t *testing.T) {
 }
 
 func TestMapLiffAppToDataSourceModel(t *testing.T) {
-	ctx := context.Background()
 	app := &liff.LiffApp{
 		LiffId:      "1234567890-DS",
 		Description: "DS App",
@@ -309,7 +327,7 @@ func TestMapLiffAppToDataSourceModel(t *testing.T) {
 	}
 
 	var diags diag.Diagnostics
-	m := mapLiffAppToDataSourceModel(ctx, app, &diags)
+	m := mapLiffAppToDataSourceModel(app, &diags)
 
 	if diags.HasError() {
 		t.Fatalf("mapLiffAppToDataSourceModel: %v", diags.Errors())
@@ -326,7 +344,11 @@ func TestMapLiffAppToDataSourceModel(t *testing.T) {
 	}
 
 	featAttrs := m.Features.Attributes()
-	if !featAttrs["ble"].(types.Bool).ValueBool() {
+	ble, ok := featAttrs["ble"].(types.Bool)
+	if !ok {
+		t.Fatal("features ble should be types.Bool")
+	}
+	if !ble.ValueBool() {
 		t.Error("expected ble true")
 	}
 }

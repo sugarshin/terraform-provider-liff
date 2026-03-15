@@ -2,8 +2,10 @@ name: Tests
 
 on:
   pull_request:
-    paths-ignore:
-      - 'README.md'
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions:
   contents: read

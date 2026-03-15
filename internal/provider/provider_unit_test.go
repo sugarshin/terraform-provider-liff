@@ -51,12 +51,18 @@ func TestLiffProvider_Schema(t *testing.T) {
 		}
 	}
 
-	secretAttr := s.Attributes["channel_secret"].(schema.StringAttribute)
+	secretAttr, ok := s.Attributes["channel_secret"].(schema.StringAttribute)
+	if !ok {
+		t.Fatal("channel_secret should be StringAttribute")
+	}
 	if !secretAttr.Sensitive {
 		t.Error("channel_secret should be sensitive")
 	}
 
-	tokenAttr := s.Attributes["channel_access_token"].(schema.StringAttribute)
+	tokenAttr, ok := s.Attributes["channel_access_token"].(schema.StringAttribute)
+	if !ok {
+		t.Fatal("channel_access_token should be StringAttribute")
+	}
 	if !tokenAttr.Sensitive {
 		t.Error("channel_access_token should be sensitive")
 	}

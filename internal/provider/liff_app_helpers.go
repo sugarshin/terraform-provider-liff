@@ -128,7 +128,7 @@ func buildUpdateLiffAppRequest(ctx context.Context, data *LiffAppResourceModel, 
 	return req
 }
 
-func mapLiffAppToModel(ctx context.Context, app *liff.LiffApp, data *LiffAppResourceModel, diags *diag.Diagnostics) {
+func mapLiffAppToModel(app *liff.LiffApp, data *LiffAppResourceModel, diags *diag.Diagnostics) {
 	data.LiffID = types.StringValue(app.LiffId)
 
 	if app.Description != "" {
@@ -184,7 +184,7 @@ func mapLiffAppToModel(ctx context.Context, app *liff.LiffApp, data *LiffAppReso
 	}
 }
 
-func mapLiffAppToDataSourceModel(ctx context.Context, app *liff.LiffApp, diags *diag.Diagnostics) LiffAppDataModel {
+func mapLiffAppToDataSourceModel(app *liff.LiffApp, diags *diag.Diagnostics) LiffAppDataModel {
 	m := LiffAppDataModel{
 		LiffID: types.StringValue(app.LiffId),
 	}

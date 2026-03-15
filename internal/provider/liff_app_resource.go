@@ -180,7 +180,7 @@ func (r *LiffAppResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	mapLiffAppToModel(ctx, app, &data, &resp.Diagnostics)
+	mapLiffAppToModel(app, &data, &resp.Diagnostics)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -205,7 +205,7 @@ func (r *LiffAppResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	mapLiffAppToModel(ctx, app, &data, &resp.Diagnostics)
+	mapLiffAppToModel(app, &data, &resp.Diagnostics)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -245,7 +245,7 @@ func (r *LiffAppResource) Update(ctx context.Context, req resource.UpdateRequest
 	}
 
 	data.LiffID = types.StringValue(liffID)
-	mapLiffAppToModel(ctx, app, &data, &resp.Diagnostics)
+	mapLiffAppToModel(app, &data, &resp.Diagnostics)
 	if resp.Diagnostics.HasError() {
 		return
 	}

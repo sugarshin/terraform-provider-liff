@@ -14,7 +14,7 @@ import (
 	"github.com/line/line-bot-sdk-go/v8/linebot/liff"
 )
 
-func setupTestServer(t *testing.T, handler http.Handler) (*Client, *httptest.Server) {
+func setupTestServer(t *testing.T, handler http.Handler) *Client {
 	t.Helper()
 	server := httptest.NewServer(handler)
 	t.Cleanup(server.Close)
@@ -23,7 +23,15 @@ func setupTestServer(t *testing.T, handler http.Handler) (*Client, *httptest.Ser
 	if err != nil {
 		t.Fatalf("NewWithToken: %v", err)
 	}
-	return c, server
+	return c
+}
+
+func writeJSON(t *testing.T, w http.ResponseWriter, v interface{}) {
+	t.Helper()
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(v); err != nil {
+		t.Fatalf("encode response: %v", err)
+	}
 }
 
 func TestAddLiffApp(t *testing.T) {
@@ -47,11 +55,10 @@ func TestAddLiffApp(t *testing.T) {
 			t.Errorf("expected description 'Test App', got %q", req.Description)
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(liff.AddLiffAppResponse{LiffId: "1234567890-AbCdEfGh"})
+		writeJSON(t, w, liff.AddLiffAppResponse{LiffId: "1234567890-AbCdEfGh"})
 	})
 
-	c, _ := setupTestServer(t, mux)
+	c := setupTestServer(t, mux)
 
 	resp, err := c.AddLiffApp(context.Background(), &liff.AddLiffAppRequest{
 		View: &liff.LiffView{
@@ -74,8 +81,7 @@ func TestGetAllLiffApps(t *testing.T) {
 		if r.Method != http.MethodGet {
 			t.Errorf("expected GET, got %s", r.Method)
 		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(liff.GetAllLiffAppsResponse{
+		writeJSON(t, w, liff.GetAllLiffAppsResponse{
 			Apps: []liff.LiffApp{
 				{
 					LiffId:      "1234567890-AbCdEfGh",
@@ -99,7 +105,7 @@ func TestGetAllLiffApps(t *testing.T) {
 		})
 	})
 
-	c, _ := setupTestServer(t, mux)
+	c := setupTestServer(t, mux)
 
 	apps, err := c.GetAllLiffApps(context.Background())
 	if err != nil {
@@ -119,8 +125,7 @@ func TestGetAllLiffApps(t *testing.T) {
 func TestGetLiffApp(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/liff/v1/apps", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(liff.GetAllLiffAppsResponse{
+		writeJSON(t, w, liff.GetAllLiffAppsResponse{
 			Apps: []liff.LiffApp{
 				{
 					LiffId:      "1234567890-AbCdEfGh",
@@ -144,7 +149,7 @@ func TestGetLiffApp(t *testing.T) {
 		})
 	})
 
-	c, _ := setupTestServer(t, mux)
+	c := setupTestServer(t, mux)
 
 	app, err := c.GetLiffApp(context.Background(), "1234567890-AbCdEfGh")
 	if err != nil {
@@ -170,15 +175,14 @@ func TestGetLiffApp(t *testing.T) {
 func TestGetLiffApp_NotFound(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/liff/v1/apps", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(liff.GetAllLiffAppsResponse{
+		writeJSON(t, w, liff.GetAllLiffAppsResponse{
 			Apps: []liff.LiffApp{
 				{LiffId: "1234567890-Other"},
 			},
 		})
 	})
 
-	c, _ := setupTestServer(t, mux)
+	c := setupTestServer(t, mux)
 
 	_, err := c.GetLiffApp(context.Background(), "1234567890-NonExistent")
 	if err == nil {
@@ -207,7 +211,7 @@ func TestUpdateLiffApp(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	c, _ := setupTestServer(t, mux)
+	c := setupTestServer(t, mux)
 
 	err := c.UpdateLiffApp(context.Background(), "1234567890-AbCdEfGh", &liff.UpdateLiffAppRequest{
 		Description: "Updated App",
@@ -230,7 +234,7 @@ func TestDeleteLiffApp(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	c, _ := setupTestServer(t, mux)
+	c := setupTestServer(t, mux)
 
 	err := c.DeleteLiffApp(context.Background(), "1234567890-AbCdEfGh")
 	if err != nil {
@@ -265,43 +269,12 @@ func TestNewWithToken_EmptyToken(t *testing.T) {
 }
 
 func TestNewWithCredentials_TokenRefresh(t *testing.T) {
-	tokenServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			t.Errorf("expected POST, got %s", r.Method)
-		}
-		if err := r.ParseForm(); err != nil {
-			t.Fatalf("parse form: %v", err)
-		}
-		if r.FormValue("grant_type") != "client_credentials" {
-			t.Errorf("expected grant_type client_credentials, got %q", r.FormValue("grant_type"))
-		}
-		if r.FormValue("client_id") != "channel-123" {
-			t.Errorf("expected client_id channel-123, got %q", r.FormValue("client_id"))
-		}
-		if r.FormValue("client_secret") != "secret-456" {
-			t.Errorf("expected client_secret secret-456, got %q", r.FormValue("client_secret"))
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"access_token": "issued-token",
-			"expires_in":   900,
-			"token_type":   "Bearer",
-		})
-	}))
-	defer tokenServer.Close()
-
-	// We can't easily test NewWithCredentials with a custom token endpoint
-	// since the token URL is hardcoded. Instead, test token refresh logic directly.
 	c := &Client{
 		channelID:     "channel-123",
 		channelSecret: "secret-456",
 	}
 
-	// The refreshToken will fail because it hits the real LINE API,
-	// but we can test the error handling.
 	err := c.refreshToken()
-	// This will fail in test environment (no real LINE API), which is expected.
 	if err == nil {
 		t.Log("refreshToken succeeded (unexpected in test without real LINE API)")
 	}
