@@ -19,13 +19,13 @@ resource "liff_app" "example" {
   bot_prompt             = "normal"
   scope                  = ["openid", "profile"]
 
-  view {
+  view = {
     type        = "full"
     url         = "https://example.com"
     module_mode = false
   }
 
-  features {
+  features = {
     qr_code = true
   }
 }
@@ -44,7 +44,7 @@ resource "liff_app" "example" {
 - `description` (String) Name of the LIFF app.
 - `features` (Attributes) LIFF app feature settings. (see [below for nested schema](#nestedatt--features))
 - `permanent_link_pattern` (String) How additional information in LIFF URLs is handled. Specify `concat`.
-- `scope` (List of String) Array of scopes.
+- `scope` (Set of String) Set of scopes required for some LIFF SDK methods to function. Valid values: `openid`, `email`, `profile`, `chat_message.write`. The default value is `["profile", "chat_message.write"]`.
 
 ### Read-Only
 
@@ -56,7 +56,7 @@ resource "liff_app" "example" {
 Required:
 
 - `type` (String) Size of the LIFF app view. One of `compact`, `tall`, `full`.
-- `url` (String) Endpoint URL (HTTPS).
+- `url` (String) Endpoint URL. The URL scheme must be `https`. URL fragments (`#URL-fragment`) can't be specified.
 
 Optional:
 

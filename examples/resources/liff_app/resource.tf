@@ -4,13 +4,13 @@ resource "liff_app" "example" {
   bot_prompt             = "normal"
   scope                  = ["openid", "profile"]
 
-  view {
+  view = {
     type        = "full"
     url         = "https://example.com"
     module_mode = false
   }
 
-  features {
+  features = {
     qr_code = true
   }
 }

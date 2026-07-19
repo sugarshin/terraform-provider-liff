@@ -89,13 +89,13 @@ resource "liff_app" "my_app" {
   bot_prompt             = "normal"
   scope                  = ["openid", "profile"]
 
-  view {
+  view = {
     type        = "full"
     url         = "https://example.com"
     module_mode = false
   }
 
-  features {
+  features = {
     qr_code = true
   }
 }
@@ -142,16 +142,16 @@ Manages the full lifecycle (create, read, update, delete, import) of a LIFF appl
 | `description` | String | Optional | - | Name of the LIFF app. Cannot include "LINE" or similar strings. |
 | `permanent_link_pattern` | String | Optional | - | How additional information in LIFF URLs is handled. Only `"concat"` is supported. |
 | `bot_prompt` | String | Optional | `"none"` | Bot link feature setting. One of `"normal"`, `"aggressive"`, `"none"`. |
-| `scope` | List(String) | Optional | - | Array of scopes: `"openid"`, `"email"`, `"profile"`, `"chat_message.write"`. |
-| `view` | Block | **Required** | - | LIFF app view settings. See [view](#view). |
-| `features` | Block | Optional | - | LIFF app feature settings. See [features](#features). |
+| `scope` | Set(String) | Optional | - | Set of scopes: `"openid"`, `"email"`, `"profile"`, `"chat_message.write"`. |
+| `view` | Object | **Required** | - | LIFF app view settings. See [view](#view). |
+| `features` | Object | Optional | - | LIFF app feature settings. See [features](#features). |
 
 ##### `view`
 
 | Attribute | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `type` | String | **Required** | - | Size of the LIFF app view. One of `"compact"`, `"tall"`, `"full"`. |
-| `url` | String | **Required** | - | Endpoint URL. Must be HTTPS. |
+| `url` | String | **Required** | - | Endpoint URL. Must be HTTPS. URL fragments (`#`) are not allowed. |
 | `module_mode` | Bool | Optional | `false` | Whether to use the LIFF app in modular mode. |
 
 ##### `features`

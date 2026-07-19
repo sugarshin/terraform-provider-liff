@@ -33,16 +33,16 @@ func TestBuildAddLiffAppRequest(t *testing.T) {
 		t.Fatalf("creating features object: %v", diags.Errors())
 	}
 
-	scopeList, diags := types.ListValueFrom(ctx, types.StringType, []string{"openid", "profile"})
+	scopeSet, diags := types.SetValueFrom(ctx, types.StringType, []string{"openid", "profile"})
 	if diags.HasError() {
-		t.Fatalf("creating scope list: %v", diags.Errors())
+		t.Fatalf("creating scope set: %v", diags.Errors())
 	}
 
 	data := &LiffAppResourceModel{
 		Description:          types.StringValue("Test App"),
 		PermanentLinkPattern: types.StringValue("concat"),
 		BotPrompt:            types.StringValue("normal"),
-		Scope:                scopeList,
+		Scope:                scopeSet,
 		View:                 viewObj,
 		Features:             featuresObj,
 	}
@@ -104,7 +104,7 @@ func TestBuildAddLiffAppRequest_MinimalFields(t *testing.T) {
 		Description:          types.StringNull(),
 		PermanentLinkPattern: types.StringNull(),
 		BotPrompt:            types.StringNull(),
-		Scope:                types.ListNull(types.StringType),
+		Scope:                types.SetNull(types.StringType),
 		View:                 viewObj,
 		Features:             types.ObjectNull(featuresAttrTypes),
 	}
@@ -148,7 +148,7 @@ func TestBuildUpdateLiffAppRequest(t *testing.T) {
 		Description:          types.StringValue("Updated"),
 		PermanentLinkPattern: types.StringNull(),
 		BotPrompt:            types.StringValue("aggressive"),
-		Scope:                types.ListNull(types.StringType),
+		Scope:                types.SetNull(types.StringType),
 		View:                 viewObj,
 		Features:             types.ObjectNull(featuresAttrTypes),
 	}

@@ -31,11 +31,11 @@ output "liff_app_url" {
 
 ### Read-Only
 
-- `bot_prompt` (String) Bot link feature setting.
+- `bot_prompt` (String) Bot link feature setting. One of `normal`, `aggressive`, `none`.
 - `description` (String) Name of the LIFF app.
 - `features` (Attributes) LIFF app feature settings. (see [below for nested schema](#nestedatt--features))
-- `permanent_link_pattern` (String) How additional information in LIFF URLs is handled.
-- `scope` (List of String) Array of scopes.
+- `permanent_link_pattern` (String) How additional information in LIFF URLs is handled. `concat` is returned.
+- `scope` (Set of String) Set of scopes required for some LIFF SDK methods to function. Possible values: `openid`, `email`, `profile`, `chat_message.write`.
 - `view` (Attributes) LIFF app view settings. (see [below for nested schema](#nestedatt--view))
 
 <a id="nestedatt--features"></a>
@@ -43,8 +43,8 @@ output "liff_app_url" {
 
 Read-Only:
 
-- `ble` (Boolean) BLE support.
-- `qr_code` (Boolean) 2D code reader.
+- `ble` (Boolean) Whether the LIFF app supports BLE (Bluetooth® Low Energy for LINE Things).
+- `qr_code` (Boolean) Whether the 2D code reader is available in the LIFF app.
 
 
 <a id="nestedatt--view"></a>
@@ -52,6 +52,6 @@ Read-Only:
 
 Read-Only:
 
-- `module_mode` (Boolean) Modular mode.
-- `type` (String) Size of the LIFF app view.
-- `url` (String) Endpoint URL.
+- `module_mode` (Boolean) Whether the LIFF app is in modular mode.
+- `type` (String) Size of the LIFF app view. One of `compact`, `tall`, `full`.
+- `url` (String) Endpoint URL (HTTPS).

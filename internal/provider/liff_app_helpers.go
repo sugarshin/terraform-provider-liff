@@ -150,11 +150,11 @@ func mapLiffAppToModel(app *liff.LiffApp, data *LiffAppResourceModel, diags *dia
 		for i, s := range app.Scope {
 			scopeValues[i] = types.StringValue(string(s))
 		}
-		scopeList, d := types.ListValue(types.StringType, scopeValues)
+		scopeSet, d := types.SetValue(types.StringType, scopeValues)
 		diags.Append(d...)
-		data.Scope = scopeList
+		data.Scope = scopeSet
 	} else {
-		data.Scope = types.ListNull(types.StringType)
+		data.Scope = types.SetNull(types.StringType)
 	}
 
 	if app.View != nil {
@@ -208,11 +208,11 @@ func mapLiffAppToDataSourceModel(app *liff.LiffApp, diags *diag.Diagnostics) Lif
 		for i, s := range app.Scope {
 			scopeValues[i] = types.StringValue(string(s))
 		}
-		scopeList, d := types.ListValue(types.StringType, scopeValues)
+		scopeSet, d := types.SetValue(types.StringType, scopeValues)
 		diags.Append(d...)
-		m.Scope = scopeList
+		m.Scope = scopeSet
 	} else {
-		m.Scope = types.ListNull(types.StringType)
+		m.Scope = types.SetNull(types.StringType)
 	}
 
 	if app.View != nil {

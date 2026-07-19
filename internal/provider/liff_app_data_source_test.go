@@ -60,9 +60,9 @@ func TestLiffAppDataSource_Schema(t *testing.T) {
 	if !ok {
 		t.Fatal("missing scope attribute")
 	}
-	scopeAttr, ok := scope.(dschema.ListAttribute)
+	scopeAttr, ok := scope.(dschema.SetAttribute)
 	if !ok {
-		t.Fatal("scope should be ListAttribute")
+		t.Fatal("scope should be SetAttribute")
 	}
 	if !scopeAttr.Computed {
 		t.Error("scope should be computed")
