@@ -121,15 +121,18 @@ func TestLiffAppResource_Schema(t *testing.T) {
 	if !ok {
 		t.Fatal("missing scope attribute")
 	}
-	scopeAttr, ok := scope.(rschema.ListAttribute)
+	scopeAttr, ok := scope.(rschema.SetAttribute)
 	if !ok {
-		t.Fatal("scope should be ListAttribute")
+		t.Fatal("scope should be SetAttribute")
 	}
 	if !scopeAttr.Optional {
 		t.Error("scope should be optional")
 	}
 	if !scopeAttr.Computed {
 		t.Error("scope should be computed")
+	}
+	if len(scopeAttr.Validators) == 0 {
+		t.Error("scope should have element validators")
 	}
 
 	plp, ok := s.Attributes["permanent_link_pattern"]
@@ -142,6 +145,17 @@ func TestLiffAppResource_Schema(t *testing.T) {
 	}
 	if !plpAttr.Optional {
 		t.Error("permanent_link_pattern should be optional")
+	}
+	if !plpAttr.Computed {
+		t.Error("permanent_link_pattern should be computed (API returns it even when unset)")
+	}
+
+	viewURL, ok := viewAttr.Attributes["url"].(rschema.StringAttribute)
+	if !ok {
+		t.Fatal("view.url should be StringAttribute")
+	}
+	if len(viewURL.Validators) == 0 {
+		t.Error("view.url should have an HTTPS validator")
 	}
 }
 

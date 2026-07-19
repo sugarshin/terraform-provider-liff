@@ -6,7 +6,9 @@ package provider
 import (
 	"context"
 	"fmt"
+	"regexp"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -35,7 +37,7 @@ type LiffAppResourceModel struct {
 	Description          types.String `tfsdk:"description"`
 	PermanentLinkPattern types.String `tfsdk:"permanent_link_pattern"`
 	BotPrompt            types.String `tfsdk:"bot_prompt"`
-	Scope                types.List   `tfsdk:"scope"`
+	Scope                types.Set    `tfsdk:"scope"`
 	View                 types.Object `tfsdk:"view"`
 	Features             types.Object `tfsdk:"features"`
 }
@@ -77,6 +79,7 @@ func (r *LiffAppResource) Schema(ctx context.Context, req resource.SchemaRequest
 			"permanent_link_pattern": schema.StringAttribute{
 				MarkdownDescription: "How additional information in LIFF URLs is handled. Specify `concat`.",
 				Optional:            true,
+				Computed:            true,
 				Validators: []validator.String{
 					stringvalidator.OneOf("concat"),
 				},
@@ -90,11 +93,16 @@ func (r *LiffAppResource) Schema(ctx context.Context, req resource.SchemaRequest
 					stringvalidator.OneOf("normal", "aggressive", "none"),
 				},
 			},
-			"scope": schema.ListAttribute{
-				MarkdownDescription: "Array of scopes.",
+			"scope": schema.SetAttribute{
+				MarkdownDescription: "Set of scopes required for some LIFF SDK methods to function. Valid values: `openid`, `email`, `profile`, `chat_message.write`. The default value is `[\"profile\", \"chat_message.write\"]`.",
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
+				Validators: []validator.Set{
+					setvalidator.ValueStringsAre(
+						stringvalidator.OneOf("openid", "email", "profile", "chat_message.write"),
+					),
+				},
 			},
 			"view": schema.SingleNestedAttribute{
 				MarkdownDescription: "LIFF app view settings.",
@@ -108,8 +116,14 @@ func (r *LiffAppResource) Schema(ctx context.Context, req resource.SchemaRequest
 						},
 					},
 					"url": schema.StringAttribute{
-						MarkdownDescription: "Endpoint URL (HTTPS).",
+						MarkdownDescription: "Endpoint URL. The URL scheme must be `https`. URL fragments (`#URL-fragment`) can't be specified.",
 						Required:            true,
+						Validators: []validator.String{
+							stringvalidator.RegexMatches(
+								regexp.MustCompile(`^https://[^#]*$`),
+								"must be an HTTPS URL without a URL fragment",
+							),
+						},
 					},
 					"module_mode": schema.BoolAttribute{
 						MarkdownDescription: "Use the LIFF app in modular mode.",

@@ -25,7 +25,7 @@ type LiffAppDataSourceModel struct {
 	Description          types.String `tfsdk:"description"`
 	PermanentLinkPattern types.String `tfsdk:"permanent_link_pattern"`
 	BotPrompt            types.String `tfsdk:"bot_prompt"`
-	Scope                types.List   `tfsdk:"scope"`
+	Scope                types.Set    `tfsdk:"scope"`
 	View                 types.Object `tfsdk:"view"`
 	Features             types.Object `tfsdk:"features"`
 }
@@ -51,15 +51,15 @@ func (d *LiffAppDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 				Computed:            true,
 			},
 			"permanent_link_pattern": schema.StringAttribute{
-				MarkdownDescription: "How additional information in LIFF URLs is handled.",
+				MarkdownDescription: "How additional information in LIFF URLs is handled. `concat` is returned.",
 				Computed:            true,
 			},
 			"bot_prompt": schema.StringAttribute{
-				MarkdownDescription: "Bot link feature setting.",
+				MarkdownDescription: "Bot link feature setting. One of `normal`, `aggressive`, `none`.",
 				Computed:            true,
 			},
-			"scope": schema.ListAttribute{
-				MarkdownDescription: "Array of scopes.",
+			"scope": schema.SetAttribute{
+				MarkdownDescription: "Set of scopes required for some LIFF SDK methods to function. Possible values: `openid`, `email`, `profile`, `chat_message.write`.",
 				Computed:            true,
 				ElementType:         types.StringType,
 			},
@@ -68,15 +68,15 @@ func (d *LiffAppDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 				Computed:            true,
 				Attributes: map[string]schema.Attribute{
 					"type": schema.StringAttribute{
-						MarkdownDescription: "Size of the LIFF app view.",
+						MarkdownDescription: "Size of the LIFF app view. One of `compact`, `tall`, `full`.",
 						Computed:            true,
 					},
 					"url": schema.StringAttribute{
-						MarkdownDescription: "Endpoint URL.",
+						MarkdownDescription: "Endpoint URL (HTTPS).",
 						Computed:            true,
 					},
 					"module_mode": schema.BoolAttribute{
-						MarkdownDescription: "Modular mode.",
+						MarkdownDescription: "Whether the LIFF app is in modular mode.",
 						Computed:            true,
 					},
 				},
@@ -86,11 +86,11 @@ func (d *LiffAppDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 				Computed:            true,
 				Attributes: map[string]schema.Attribute{
 					"ble": schema.BoolAttribute{
-						MarkdownDescription: "BLE support.",
+						MarkdownDescription: "Whether the LIFF app supports BLE (Bluetooth® Low Energy for LINE Things).",
 						Computed:            true,
 					},
 					"qr_code": schema.BoolAttribute{
-						MarkdownDescription: "2D code reader.",
+						MarkdownDescription: "Whether the 2D code reader is available in the LIFF app.",
 						Computed:            true,
 					},
 				},
@@ -146,11 +146,11 @@ func (d *LiffAppDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		for i, s := range app.Scope {
 			scopeValues[i] = types.StringValue(string(s))
 		}
-		scopeList, diags := types.ListValueFrom(ctx, types.StringType, scopeValues)
+		scopeSet, diags := types.SetValueFrom(ctx, types.StringType, scopeValues)
 		resp.Diagnostics.Append(diags...)
-		data.Scope = scopeList
+		data.Scope = scopeSet
 	} else {
-		data.Scope = types.ListNull(types.StringType)
+		data.Scope = types.SetNull(types.StringType)
 	}
 
 	if app.View != nil {
