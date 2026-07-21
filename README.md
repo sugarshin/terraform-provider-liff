@@ -1,10 +1,10 @@
-# Terraform Provider for LINE LIFF
+# Terraform Provider for LIFF
 
 [![Terraform Registry](https://img.shields.io/badge/terraform-registry-blueviolet.svg)](https://registry.terraform.io/providers/sugarshin/liff/latest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sugarshin/terraform-provider-liff)](https://goreportcard.com/report/github.com/sugarshin/terraform-provider-liff)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A Terraform provider for managing [LINE LIFF (LINE Front-end Framework)](https://developers.line.biz/en/docs/liff/overview/) applications.
+A Terraform provider for managing [LIFF (LINE Front-end Framework)](https://developers.line.biz/en/docs/liff/overview/) applications.
 
 LIFF is a platform provided by LINE for developing web apps that run within the LINE app. This provider allows you to manage LIFF apps as infrastructure-as-code using [LIFF Server API](https://developers.line.biz/en/reference/liff-server/).
 
