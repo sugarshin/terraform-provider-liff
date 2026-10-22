@@ -1,12 +1,12 @@
 module github.com/sugarshin/terraform-provider-liff
 
-go 1.25.8
+go 1.26
 
 require (
 	github.com/hashicorp/terraform-plugin-framework v1.19.0
 	github.com/hashicorp/terraform-plugin-framework-validators v0.19.0
 	github.com/hashicorp/terraform-plugin-go v0.31.0
-	github.com/line/line-bot-sdk-go/v8 v8.22.0
+	github.com/line/line-bot-sdk-go/v8 v8.23.0
 )
 
 require (
